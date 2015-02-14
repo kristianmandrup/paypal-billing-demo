@@ -1,21 +1,22 @@
 var firebase = require('firebase');
 
-var return_url = "http://ulkkbc1e933e.laurenceputra.koding.io:3000/payment/execute/";
-var cancel_url = "http://ulkkbc1e933e.laurenceputra.koding.io:3000/payment/cancel/";
+var return_url = process.env.APP_BASE_URL + process.env.APP_PAYPAL_SUCCESS_CALLBACK;
+var cancel_url = process.env.APP_BASE_URL + process.env.APP_PAYPAL_CANCEL_CALLBACK;
 
-var firebaseRef = new firebase('https://smu-paypal-demo.firebaseio.com');
+//create a firebase connection
+var firebaseRef = new firebase(process.env.FIREBASE_URL);
+//authenticate with firebase server
 firebaseRef.authWithCustomToken(process.env.FIREBASE_TOKEN, function(error, authData){
     if(error){
         throw "Firebase Auth Failed for server!";
     }
 });
 
-var start_date = new Date();
-start_date.setMinutes(start_date.getMinutes() + 5);
-
+//model object
 module.exports = {
     'firebase': firebaseRef,
     'plans': {
+        //defines the plans that are available
         "2999": {
             "description": "Regular Plan",
             "merchant_preferences": {
@@ -97,6 +98,7 @@ module.exports = {
             "type": "INFINITE"
         }  
     },
+    //defines the data required to activate the plan
     'activatePlan':[{
         "op": "replace",
         "path": '/',
@@ -104,11 +106,12 @@ module.exports = {
             "state": "ACTIVE"
         }
     }],
+    //creates billing agreement data based on the tier and address
     'createAgreementData': function(tier, planId, address){
         return {
             "name": tier == '2999'? "Regular Plan": "Premium Plan",
             "description": tier == '2999'? "Regular Plan": "Premium Plan",
-            "start_date": toIsoString(start_date),
+            "start_date": getStartDate(),
             "plan":{
                 "id": planId
             },
@@ -125,6 +128,7 @@ module.exports = {
             }
         }
     },
+    //sample address
     'address':{
         'line1': '1 Temasek Avenue',
         'line2': '#14-01',
@@ -135,6 +139,7 @@ module.exports = {
     }
 }
 
+//utlity functions to make generating the start date above easier
 function PadZeros(value, desiredStringLength){
     var num = value + "";
     while (num.length < desiredStringLength){
@@ -144,4 +149,10 @@ function PadZeros(value, desiredStringLength){
 }
 function toIsoString(d){
     return d.getUTCFullYear() + '-' + PadZeros(d.getUTCMonth() + 1, 2) + '-' + PadZeros(d.getUTCDate(), 2) + 'T' + PadZeros(d.getUTCHours(), 2) + ':' + PadZeros(d.getUTCMinutes(), 2) + ':' + PadZeros(d.getUTCSeconds(), 2) + 'Z';
+}
+
+function getStartDate(){
+    var start_date = new Date();
+    start_date.setMinutes(start_date.getMinutes() + 5);
+    return toIsoString(start_date);
 }
