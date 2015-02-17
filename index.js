@@ -46,6 +46,7 @@ app.get('/payment/create-plan', function (req, res) {
 
 //initiate payment for a plan id
 app.get('/payment/initiate/:planId', function (req, res) {
+    // TODO: initiate a session with the users, with an id to identify the user
     var planId = req.params.planId;
     model.firebase.child('/plans').on('value', function(plans){
         //gets all the plans from Firebase
@@ -80,6 +81,7 @@ app.get('/payment/initiate/:planId', function (req, res) {
 
 //execute payment for plan. this endpoint is called when the user has paided via PayPal
 app.get('/payment/execute/', function (req, res) {
+    // TODO: using information in the session, and agreement ID, store the information in Firebase
     //checks if there is a token
     if(req.query.token){
         //starts the billingAgreement and collects the money
@@ -95,6 +97,27 @@ app.get('/payment/execute/', function (req, res) {
     else{
         res.json({'status':'failed'})
     }
+})
+
+//cancels a specific agreement
+app.get('/payment/cancel/:agreementId', function(req, res){
+    var cancel_note = {'note':'cancel'};
+    //does the actual cancel but returns only a http response code 204 if successful
+    paypal.billingAgreement.cancel(req.params.agreementId, cancel_note, function (error, response) {
+        if (error) {
+            throw error;
+        } 
+        else {
+            //check to see if it is really cancelled
+            paypal.billingAgreement.get(req.params.agreementId, function(error, agreement){
+                if(error){
+                    throw error;
+                }
+                //if cancelled, agreement.state == "Cancelled"
+                res.json({'status':'success', 'data': agreement});
+            });
+        }
+    });
 })
 
 var server = app.listen(process.env.PORT || 3000, function () {
