@@ -12,10 +12,17 @@ paypal.configure({
 //tells the server to look into the /public folder for the static content
 app.use(express.static(__dirname + '/public'));
 
+var backend = require('/backend/firebase');
+
 var routes = require('./routes');
 
-routes.plan.mount(app);
-routes.billing,mount(app);
+var cancel = require('./billing/cancel');
+var start = require('./billing/start');
+routes.plan.mount(app, {cancel: cancel, start: start}, {backend: backend});
+
+var create = require('./billing/create');
+var initiate = require('./billing/initiate');
+routes.billing.mount(app, {create: create, initiate: initiate}, , {backend: backend});
 
 var server = app.listen(process.env.PORT || 3000, function () {
     var host = server.address().address;

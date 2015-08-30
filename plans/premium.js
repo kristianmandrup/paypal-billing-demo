@@ -1,11 +1,12 @@
-module.exports = {
+module.exports = function(config) {
+  return {
     "description": "Premium Plan",
     "merchant_preferences": {
         "auto_bill_amount": "yes",
-        "cancel_url": cancel_url,
+        "cancel_url": config.cancel_url,
         "initial_fail_amount_action": "continue",
         "max_fail_attempts": "1",
-        "return_url": return_url,
+        "return_url": config.return_url,
         "setup_fee": {
             "currency": "SGD",
             "value": "0"
@@ -37,4 +38,5 @@ module.exports = {
         }
     ],
     "type": "INFINITE"
+  }
 }

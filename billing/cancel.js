@@ -13,5 +13,5 @@ module.exports = function(req, res) {
               res.json({'status':'success', 'data': agreement});
           });
       }
-  });  
+  });
 }

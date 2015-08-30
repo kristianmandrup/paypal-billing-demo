@@ -6,6 +6,8 @@ var routes = {
 module.exports.routes = routes
 
 module.exports.mount = function (app) {
-  routes.create(app);
-  routes.initiate(app);
+  module.exports.mount = function (app, actionMap) {
+    routes.create(app, actionMap.create);
+    routes.initiate(app, actionMap.initiate);
+  }
 }
