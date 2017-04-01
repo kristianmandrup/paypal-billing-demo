@@ -1,5 +1,7 @@
 # SMU PayPal Demo NodeJS
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/kristianmandrup/paypal-billing-demo.svg)](https://greenkeeper.io/)
+
 ## Set Up
 
 This codebase has been set up to work with heroku.
