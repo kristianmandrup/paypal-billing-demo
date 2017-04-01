@@ -12,6 +12,6 @@
   "dependencies": {
     "express": "^4.11.2",
     "paypal-rest-sdk": "^1.5.0",
-    "firebase": "^2.1.2"
+    "firebase": "^3.7.4"
   }
 }
